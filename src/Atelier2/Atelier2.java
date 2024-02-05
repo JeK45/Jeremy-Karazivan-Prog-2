@@ -25,7 +25,7 @@ class Atelier2 {
 //----------------------------------------------------------------------------------------
         cmbChoice = new JComboBox<>(new String[]{"Vider", "Garnir", "Nombres 1..100", "Nombres -25..25"});
         cmbChoice.setPreferredSize(dimLeft);
-        cmbChoice.addItemListener(e -> cmbChoice_onSelection(e));
+        cmbChoice.addItemListener(e -> cmbChoice_onSelection());
 // ----------------------------------------------------------------------------------------
         radAscending = new JRadioButton("Croissant");
         radAscending.setSelected(true);
@@ -66,10 +66,9 @@ class Atelier2 {
         txaNumbers = new JTextArea();
         txaNumbers.setWrapStyleWord(true);
         txaNumbers.setLineWrap(true);
-        txaNumbers.setEditable(false);
-        txaNumbers.setPreferredSize(new Dimension(180, 350));
 
         scr_txaNumbers = new JScrollPane(txaNumbers);
+        scr_txaNumbers.setPreferredSize(new Dimension(180, 350));
 //----------------------------------------------------------------------------------------
         panLeft = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 10));
         panLeft.add(cmbChoice);
@@ -84,7 +83,7 @@ class Atelier2 {
         panLeft.add(btnQuit);
 
         panRight = new JPanel();
-        panRight.add(txaNumbers);
+        panRight.add(scr_txaNumbers);
 
         frame.add(panLeft);
         frame.add(panRight);
@@ -92,20 +91,67 @@ class Atelier2 {
         frame.setVisible(true);
     }
 
-    void cmbChoice_onSelection(ItemEvent e) {
-        System.out.println(e.getStateChange() + " " + ItemEvent.SELECTED);
+    void cmbChoice_onSelection() {
+        switch (cmbChoice.getSelectedIndex()) {
+            case 0:
+                txaNumbers.setText("");
+                break;
+            case 1:
+                writeArray(new int[]{10, 50, 2, 33, -27, 144, 57, 25});
+                break;
+            case 2:
+                txaNumbers.setText("");
+                for (int i = 1; i <= 100; i++) {
+                    txaNumbers.setText(txaNumbers.getText() + i + "\n");
+                }
+                break;
+            case 3:
+                txaNumbers.setText("");
+                for (int j = -25; j <= 25; j++) {
+                    txaNumbers.setText(txaNumbers.getText() + j + "\n");
+                }
+                break;
+        }
+        updateStats();
     }
 
     void btnSort_onClick() {
-
+        if (radAscending.isSelected()) {
+            writeArray(Tableaux.TriCroissantSSS(stringArrayToIntArray(txaNumbers.getText().split("\n"))));
+        }
+        else {
+            writeArray(Tableaux.TriDecroissantSSS(stringArrayToIntArray(txaNumbers.getText().split("\n"))));
+        }
     }
 
     void btnSearch_onClick() {
-
+        System.out.println("Trouvé à l'indice " + Tableaux.fouilleSeq(stringArrayToIntArray(txaNumbers.getText().split("\n")), Integer.parseInt(txfValue.getText())));
     }
 
     void btnQuit_onClick() {
         System.exit(0);
+    }
+
+    void updateStats() {
+        txfMin.setText(Integer.toString(Tableaux.minimum(stringArrayToIntArray(txaNumbers.getText().split("\n")))));
+        txfMax.setText(Integer.toString(Tableaux.maximum(stringArrayToIntArray(txaNumbers.getText().split("\n")))));
+        txfAverage.setText(Double.toString(Tableaux.moyenne(stringArrayToIntArray(txaNumbers.getText().split("\n")))));
+    }
+
+    int[] stringArrayToIntArray(String[] stringArray) {
+        int[] intArray = new int[stringArray.length];
+
+        for (int i = 0; i < stringArray.length; i++) {
+            intArray[i] = Integer.parseInt(stringArray[i]);
+        }
+        return intArray;
+    }
+
+    void writeArray(int[] array) {
+        txaNumbers.setText("");
+        for (int elem: array) {
+            txaNumbers.setText(txaNumbers.getText() + elem + "\n");
+        }
     }
 
     public static void main(String[] args) {
